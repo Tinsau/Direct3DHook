@@ -131,6 +131,7 @@ namespace Capture.Hook
                 #region Get Device and SwapChain method addresses
                 // Create temporary device + swapchain and determine method addresses
                 _renderForm = ToDispose(new SharpDX.Windows.RenderForm());
+                try
                 {
                     // First create a regular D3D11 device
                     using (
@@ -140,6 +141,7 @@ namespace Capture.Hook
                             new[] {
                         SharpDX.Direct3D.FeatureLevel.Level_11_1,
                         SharpDX.Direct3D.FeatureLevel.Level_11_0,
+                        SharpDX.Direct3D.FeatureLevel.Level_10_1,
                             }))
                     {
                         // Query device for the Device1 interface (ID3D11Device1)
@@ -174,6 +176,12 @@ namespace Capture.Hook
                             }
                         }
                     }
+                }
+                catch (Exception e)
+                {
+                    _device1 = null;
+                    _swapChain1 = null;
+                    this.DebugMessage("exception : " + e.ToString());
                 }
                 if (_device1 != null && _swapChain1 != null)
                 {
