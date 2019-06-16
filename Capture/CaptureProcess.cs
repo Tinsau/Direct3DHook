@@ -114,6 +114,7 @@ namespace Capture
             if (this.Process == null)
                 return;
             IntPtr handle = this.Process.MainWindowHandle;
+            //_serverInterface.Message(MessageType.Debug, "Main Window Handle: " + handle.ToString("X8"));
             int i = 0;
 
             while (!NativeMethods.IsWindowInForeground(handle))
@@ -137,7 +138,7 @@ namespace Capture
                 Thread.Sleep(250);
 
                 // Check if the target process main window is now in the foreground
-                if (NativeMethods.IsWindowInForeground(handle))
+                if (true)//NativeMethods.IsWindowInForeground(handle))
                 {
                     // Leave enough time for screen to redraw
                     Thread.Sleep(1000);
