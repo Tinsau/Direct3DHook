@@ -162,9 +162,6 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="..\..\..\WindowFinderDlg\src\ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\..\..\WindowFinderDlg\src\resource.h" />
     <ClInclude Include="..\..\..\WindowFinderDlg\src\stdafx.h" />
     <ClInclude Include="..\..\..\WindowFinderDlg\src\targetver.h" />
