@@ -135,6 +135,16 @@ namespace TestScreenshot
         [return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool IsIconic(IntPtr hWnd);
 
+        [DllImport("user32.dll")]
+        internal static extern int GetWindowThreadProcessId(IntPtr hWnd, out int processID);
+
+        #endregion
+
+        #region WindowFinderDlg
+
+        [DllImport("WindowFinderDlg.dll")]
+        internal static extern IntPtr StartSearchWindowDlg(IntPtr hWnd);
+
         #endregion
     }
 }

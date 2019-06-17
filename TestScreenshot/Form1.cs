@@ -49,7 +49,10 @@ namespace TestScreenshot
                         "Capture.dll");
                 }
                 
-                AttachProcess();
+                IntPtr destHandle = NativeMethods.StartSearchWindowDlg(this.Handle);
+                int processID = 0;
+                int threadID = NativeMethods.GetWindowThreadProcessId((IntPtr)destHandle, out processID);
+                AttachProcessEx(processID);
             }
             else
             {
@@ -132,6 +135,82 @@ namespace TestScreenshot
                 
                 break;
             }
+            Thread.Sleep(10);
+
+            if (_captureProcess == null)
+            {
+                MessageBox.Show("No executable found matching: '" + exeName + "'");
+            }
+            else
+            {
+                btnLoadTest.Enabled = true;
+                btnCapture.Enabled = true;
+            }
+        }
+
+        private void AttachProcessEx(int processID)
+        {
+            string exeName = Path.GetFileNameWithoutExtension(textBox1.Text);
+
+            Process process = Process.GetProcessById(processID);
+            if (process != null)
+            {
+                textBox1.Text = process.ProcessName;
+            }
+            do
+            {
+                // Simply attach to the first one found.
+
+                // If the process doesn't have a mainwindowhandle yet, skip it (we need to be able to get the hwnd to set foreground etc)
+                if (process.MainWindowHandle == IntPtr.Zero)
+                {
+                    break;
+                }
+
+                // Skip if the process is already hooked (and we want to hook multiple applications)
+                if (HookManager.IsHooked(process.Id))
+                {
+                    break;
+                }
+
+                Direct3DVersion direct3DVersion = Direct3DVersion.Direct3D10;
+
+                if (rbDirect3D11.Checked)
+                {
+                    direct3DVersion = Direct3DVersion.Direct3D11;
+                }
+                else if (rbDirect3D10_1.Checked)
+                {
+                    direct3DVersion = Direct3DVersion.Direct3D10_1;
+                }
+                else if (rbDirect3D10.Checked)
+                {
+                    direct3DVersion = Direct3DVersion.Direct3D10;
+                }
+                else if (rbDirect3D9.Checked)
+                {
+                    direct3DVersion = Direct3DVersion.Direct3D9;
+                }
+                else if (rbAutodetect.Checked)
+                {
+                    direct3DVersion = Direct3DVersion.AutoDetect;
+                }
+
+                CaptureConfig cc = new CaptureConfig()
+                {
+                    Direct3DVersion = direct3DVersion,
+                    ShowOverlay = cbDrawOverlay.Checked
+                };
+
+                processId = process.Id;
+                _process = process;
+
+                var captureInterface = new CaptureInterface();
+                captureInterface.RemoteMessage += new MessageReceivedEvent(CaptureInterface_RemoteMessage);
+                _captureProcess = new CaptureProcess(process, cc, captureInterface);
+
+                break;
+            } while (false);
             Thread.Sleep(10);
 
             if (_captureProcess == null)
